@@ -2,6 +2,8 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 import mysql.connector
+import qrcode
+import os
 
 app = Flask(__name__)
 app.secret_key = "elva"
@@ -315,6 +317,19 @@ def detail_pesanan_elva(id_transaksi):
     if not transaksi:
         flash('Pesanan tidak ditemukan', 'danger')
         return redirect(url_for('shop_online_elva'))
+        
+    qr_path = None
+    if transaksi['kurir_elva'].lower().replace(' ', '_') == 'ambil_sendiri':
+        qr_data = transaksi['no_faktur_elva']
+
+        qr_folder = 'static/qr_elva'
+        os.makedirs(qr_folder, exist_ok=True)
+
+        qr_path = f"{qr_folder}/{qr_data}.png"
+
+        if not os.path.exists(qr_path):
+            qr_img = qrcode.make(qr_data)
+            qr_img.save(qr_path)
 
     # 🔹 DETAIL ITEM
     cursor.execute("""
@@ -331,8 +346,8 @@ def detail_pesanan_elva(id_transaksi):
     return render_template(
         'detail_pesanan_elva.html',
         transaksi=transaksi,
-        items=items
-    )
+        items=items,
+        qr_path=qr_path    )
 
 # ================== LOGOUT ==================
 @app.route('/logout_elva')

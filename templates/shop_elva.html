@@ -12,11 +12,56 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
     <style>
-        body { background:#f8fafc }
-        .card { border-radius:1rem; transition:.2s }
-        .card:hover { transform:translateY(-4px) }
-        .badge-category { background:#e0e7ff; color:#3730a3 }
-        .checkout-box { position:sticky; top:90px }
+        body{
+            background:#f8fafc;
+        }
+        .card{
+            border-radius:1rem;
+            transition:.2s;
+        }
+        .card:hover{
+            transform:translateY(-4px);
+        }
+        .card-img-top{
+            height:180px;
+            object-fit:cover;
+        }
+        .badge-category{
+            background:#e0e7ff;
+            color:#3730a3;
+        }
+        .checkout-box{
+            position:sticky;
+            top:90px;
+        }
+
+        /* MOBILE APP LAYER */
+        @media (max-width:768px){
+            body{
+                padding-bottom:70px;
+            }
+            .checkout-box{
+                position:static;
+                margin-top:1rem;
+            }
+            .mobile-app-nav{
+                position:fixed;
+                bottom:0;
+                left:0;
+                right:0;
+                background:#ffffff;
+                border-top:1px solid #dee2e6;
+                z-index:1040;
+            }
+            .mobile-app-nav a{
+                font-size:12px;
+                color:#555;
+                text-decoration:none;
+            }
+            .mobile-app-nav i{
+                font-size:20px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -48,15 +93,15 @@
 </nav>
 
 <div class="container my-4">
-<div class="row">
+<div class="row g-4">
 
 <!-- LIST PRODUK -->
-<div class="col-md-9">
+<div class="col-lg-9">
 
     <!-- SEARCH & FILTER -->
     <div class="card shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" class="row g-2">
+            <form method="GET" class="row g-2 align-items-end">
                 <div class="col-md-5">
                     <input type="text" name="search_elva" class="form-control"
                            placeholder="Cari nama obat..."
@@ -76,15 +121,18 @@
                 </div>
 
                 <div class="col-md-3">
-                    <button class="btn btn-primary w-100">Cari</button>
+                    <button class="btn btn-primary w-100">
+                        <i class="bi bi-search"></i> Cari
+                    </button>
                 </div>
             </form>
         </div>
     </div>
 
+    <!-- GRID PRODUK -->
     <div class="row g-4">
         {% for obat in obat_elva %}
-        <div class="col-md-4">
+        <div class="col-6 col-md-4">
             <div class="card h-100 shadow-sm">
                 <img src="{{ url_for('static', filename='gambar_obat/' + obat.gambar_elva) if obat.gambar_elva else 'https://via.placeholder.com/300x200' }}"
                      class="card-img-top">
@@ -130,8 +178,9 @@
     </div>
 
 </div>
+
 <!-- CHECKOUT SIDEBAR -->
-<div class="col-md-3">
+<div class="col-lg-3">
     <div class="card shadow checkout-box">
         <div class="card-body">
             <h6 class="fw-bold mb-3">
@@ -139,14 +188,13 @@
             </h6>
 
             {% if session.cart_elva %}
-                <p class="small mb-3">
-                    {{ session.cart_elva|length }} item di keranjang
-                </p>
+            <p class="small mb-3">
+                {{ session.cart_elva|length }} item di keranjang
+            </p>
 
-                <a href="{{ url_for('cart_elva') }}"
-                   class="btn btn-primary w-100">
-                    Lihat Keranjang
-                </a>
+            <a href="{{ url_for('cart_elva') }}" class="btn btn-primary w-100">
+                Lihat Keranjang
+            </a>
             {% endif %}
             {% if list_pesanan %}
             <hr>
@@ -170,13 +218,52 @@
                 {% endfor %}
             </div>
             {% endif %}
-
-
         </div>
     </div>
 </div>
 
 </div>
+</div>
+<!-- MOBILE APP NAV -->
+<!-- MOBILE APP NAV -->
+<div class="mobile-app-nav d-md-none">
+    <div class="d-flex justify-content-around text-center py-2">
+
+        <!-- HOME -->
+        <a href="{{ url_for('shop_online_elva') }}">
+            <i class="bi bi-house"></i><br>
+            Home
+        </a>
+
+        <!-- CART -->
+        <a href="{{ url_for('cart_elva') }}" class="position-relative">
+            <i class="bi bi-cart3"></i><br>
+            Cart
+            {% if session.cart_elva %}
+            <span class="position-absolute top-0 start-50 translate-middle badge bg-danger">
+                {{ session.cart_elva|length }}
+            </span>
+            {% endif %}
+        </a>
+
+        <!-- PESANAN -->
+        <a href="{{ url_for('shop_online_elva') }}#pesanan" class="position-relative">
+            <i class="bi bi-receipt"></i><br>
+            Pesanan
+            {% if list_pesanan %}
+            <span class="position-absolute top-0 start-50 translate-middle badge bg-primary">
+                {{ list_pesanan|length }}
+            </span>
+            {% endif %}
+        </a>
+
+        <!-- LOGOUT -->
+        <a href="{{ url_for('logout_elva') }}" class="text-danger">
+            <i class="bi bi-box-arrow-right"></i><br>
+            Logout
+        </a>
+
+    </div>
 </div>
 
 </body>

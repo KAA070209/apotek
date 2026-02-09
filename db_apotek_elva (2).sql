@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Waktu pembuatan: 09 Feb 2026 pada 14.17
+-- Waktu pembuatan: 09 Feb 2026 pada 16.38
 -- Versi server: 10.4.32-MariaDB
 -- Versi PHP: 8.0.30
 
@@ -85,16 +85,14 @@ CREATE TABLE `obat_elva` (
 --
 
 INSERT INTO `obat_elva` (`id_obat_elva`, `kode_obat_elva`, `nama_obat_elva`, `jenis_obat_elva`, `stok_elva`, `harga_elva`, `tanggal_exp_elva`, `id_gudang_elva`, `kategori_id_elva`, `gambar_elva`) VALUES
-(1, 'OBT001', 'Paracetamol', 'jadi', 90, 5000, '2027-02-10', 1, 1, 'paracetamol.png'),
-(2, 'OBT002', 'Amoxicillin', 'jadi', 46, 12000, '2028-02-16', 1, 2, 'amoxilin.png'),
-(3, 'OBT003', 'Vitamin C 1000mg', 'jadi', 150, 7000, '2027-01-20', 1, 3, 'vitamin_c.png'),
-(4, 'OBT004', 'Antasida Doen', 'jadi', 90, 3500, '2026-08-10', 2, 1, 'antasida-doen.png'),
-(5, 'OBT005', 'OBH Sirup 100ml', 'jadi', 60, 12000, '2026-11-30', 2, 1, 'obh-sirup.png'),
-(6, 'OBT006', 'Salep Kulit Racikan', 'racikan', 40, 18000, '2026-06-01', 1, NULL, NULL),
-(7, 'OBT007', 'Puyer Demam Anak', 'racikan', 70, 9000, '2026-07-15', 2, NULL, NULL),
-(8, 'OBT008', 'Asam Mefenamat 500mg', 'jadi', 100, 4000, '2027-03-05', 1, NULL, NULL),
-(9, 'OBT009', 'Cetirizine 10mg', 'jadi', 110, 3500, '2026-09-25', 1, NULL, NULL),
-(10, 'OBT010', 'Salbutamol Tablet', 'jadi', 85, 5000, '2026-12-10', 2, NULL, NULL);
+(1, 'OBT001', 'Paracetamol', 'jadi', 86, 5000, '2027-02-10', 1, 1, 'paracetamol.png'),
+(2, 'OBT002', 'Amoxicillin', 'jadi', 41, 12000, '2028-02-16', 1, 2, 'amoxilin.png'),
+(3, 'OBT003', 'Vitamin C 1000mg', 'jadi', 139, 7000, '2027-01-20', 1, 3, 'vitamin_c.png'),
+(4, 'OBT004', 'Antasida Doen', 'jadi', 88, 3500, '2026-08-10', 2, 1, 'antasida-doen.png'),
+(5, 'OBT005', 'OBH Sirup 100ml', 'jadi', 58, 12000, '2026-11-30', 2, 1, 'obh-sirup.png'),
+(8, 'OBT006', 'Asam Mefenamat 500mg', 'jadi', 99, 4000, '2027-03-05', 1, 2, 'Asam-Mefenamat-500mg.png'),
+(9, 'OBT007', 'Cetirizine 10mg', 'jadi', 109, 3500, '2026-09-25', 1, 2, 'Cetirizine-10mg.png'),
+(10, 'OBT008', 'Salbutamol Tablet', 'jadi', 84, 5000, '2026-12-10', 2, 2, 'salbutamol-tablet.png');
 
 -- --------------------------------------------------------
 
@@ -129,7 +127,7 @@ CREATE TABLE `pengiriman_elva` (
 
 INSERT INTO `pengiriman_elva` (`id_pengiriman_elva`, `id_transaksi_elva`, `kurir_elva`, `no_resi_elva`, `status_elva`) VALUES
 (1, 1, 'Reguler', 'ELVA-20260209-1', 'diproses'),
-(2, 2, 'Ambil Sendiri', 'ELVA-20260209-2', 'diproses');
+(7, 7, 'Ambil Sendiri', 'ELVA-20260209-7', 'diproses');
 
 -- --------------------------------------------------------
 
@@ -208,8 +206,9 @@ CREATE TABLE `transaksi_detail_elva` (
 INSERT INTO `transaksi_detail_elva` (`id_detail_elva`, `id_transaksi_elva`, `id_obat_elva`, `jumlah_elva`, `harga_elva`, `diskon_elva`, `total_elva`) VALUES
 (1, 1, 2, 2, 12000, NULL, 24000),
 (2, 1, 1, 2, 5000, NULL, 10000),
-(3, 2, 1, 8, 5000, NULL, 40000),
-(4, 2, 2, 2, 12000, NULL, 24000);
+(20, 7, 3, 1, 7000, NULL, 7000),
+(21, 7, 2, 1, 12000, NULL, 12000),
+(22, 7, 1, 1, 5000, NULL, 5000);
 
 --
 -- Trigger `transaksi_detail_elva`
@@ -249,7 +248,7 @@ CREATE TABLE `transaksi_elva` (
 
 INSERT INTO `transaksi_elva` (`id_transaksi_elva`, `no_faktur_elva`, `tanggal_elva`, `id_pasien_elva`, `alamat_elva`, `metode_bayar_elva`, `kurir_elva`, `ongkir_elva`, `total_elva`, `tipe_elva`, `status_elva`) VALUES
 (1, 'INV-20260209184454', '2026-02-09 18:44:54', 1, 'jl.p', 'COD', 'Reguler', 5000, 39000, 'online', 'diproses'),
-(2, 'INV-20260209190435', '2026-02-09 19:04:35', 1, '', 'DANA', 'Ambil Sendiri', 0, 64000, 'online', 'diproses');
+(7, 'INV-20260209213255', '2026-02-09 21:32:55', 1, '', 'COD', 'Ambil Sendiri', 0, 24000, 'online', 'diproses');
 
 -- --------------------------------------------------------
 
@@ -392,7 +391,7 @@ ALTER TABLE `pasien_elva`
 -- AUTO_INCREMENT untuk tabel `pengiriman_elva`
 --
 ALTER TABLE `pengiriman_elva`
-  MODIFY `id_pengiriman_elva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_pengiriman_elva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `racikan_elva`
@@ -416,13 +415,13 @@ ALTER TABLE `resep_elva`
 -- AUTO_INCREMENT untuk tabel `transaksi_detail_elva`
 --
 ALTER TABLE `transaksi_detail_elva`
-  MODIFY `id_detail_elva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id_detail_elva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 
 --
 -- AUTO_INCREMENT untuk tabel `transaksi_elva`
 --
 ALTER TABLE `transaksi_elva`
-  MODIFY `id_transaksi_elva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id_transaksi_elva` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=8;
 
 --
 -- AUTO_INCREMENT untuk tabel `users_elva`

@@ -15,8 +15,19 @@
 
             <p>No Faktur: <strong>{{ transaksi.no_faktur_elva }}</strong></p>
             <p>Status: <span class="badge bg-warning">{{ transaksi.status_elva }}</span></p>
-            <p>Kurir: {{ transaksi.kurir_elva }}</p>
+            <p>Pilihan: {{ transaksi.kurir_elva }}</p>
             <p>No Resi: {{ transaksi.no_resi_elva or '-' }}</p>
+            {% if qr_path %}
+            <hr>
+            <div class="text-center mt-4">
+                <h5>Tunjukkan QR ini ke Kasir</h5>
+                <img src="/{{ qr_path }}" width="220">
+                <p class="small text-muted">
+                    Pesanan Ambil Sendiri · Sudah Dibayar
+                </p>
+            </div>
+            {% endif %}
+
 
             <hr>
 
