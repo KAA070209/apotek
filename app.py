@@ -6,18 +6,17 @@ import qrcode
 import os
 
 app = Flask(__name__)
-app.secret_key = "elva"
+# ================= SECRET KEY =================
+app.secret_key = os.getenv("SECRET_KEY", "elva")
 
-
-# ================== DATABASE ==================
-def get_db_connection_elva():
+# ================= KONEKSI DATABASE =================
+def get_db_connection_azka():
     return mysql.connector.connect(
-        host="localhost",
-        user="root",
-        password="",
-        database="db_apotek_elva"
+        host=os.getenv("DB_HOST"),
+        user=os.getenv("DB_USER"),
+        password=os.getenv("DB_PASSWORD"),
+        database=os.getenv("DB_NAME")
     )
-
 
 # ================== REGISTER ==================
 @app.route('/register_elva', methods=['GET', 'POST'])
