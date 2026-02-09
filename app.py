@@ -10,7 +10,7 @@ app = Flask(__name__)
 app.secret_key = os.getenv("SECRET_KEY", "elva")
 
 # ================= KONEKSI DATABASE =================
-def get_db_connection_azka():
+def get_db_connection_elva():
     return mysql.connector.connect(
         host=os.getenv("DB_HOST"),
         user=os.getenv("DB_USER"),
