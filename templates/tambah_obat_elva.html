@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Tambah Obat - Apotek Elva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2980b9;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        .obat-list {
+            margin-bottom: 20px;
+        }
+
+        .obat-item {
+            padding: 10px;
+            margin: 10px 0;
+            background-color: #f1f3f4;
+            border-radius: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .obat-item label {
+            margin-left: 10px;
+            font-weight: 500;
+        }
+
+        .btn {
+            padding: 12px;
+            background-color: #3498db;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            width: 100%;
+            transition: background-color 0.3s;
+        }
+
+        .btn:hover {
+            background-color: #2980b9;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Pilih Obat untuk Menambah</h1>
+        <form action="/tambah_obat_ke_keranjang" method="POST">
+            <div class="obat-list">
+                {% for obat in obat %}
+                <div class="obat-item">
+                    <input type="radio" name="obat_id" value="{{ obat.id_obat_elva }}" id="obat_{{ obat.id_obat_elva }}">
+                    <label for="obat_{{ obat.id_obat_elva }}">{{ obat.nama_obat_elva }} - Rp {{ "{:,}".format(obat.harga_elva) }}</label>
+                </div>
+                {% endfor %}
+            </div>
+            <button type="submit" class="btn">Tambah Obat</button>
+        </form>
+    </div>
+</body>
+</html>

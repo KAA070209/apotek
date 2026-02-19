@@ -20,30 +20,36 @@
                 <div class="card-body">
 
                     <!-- FORM UPDATE KURIR -->
+                    <!-- FORM UPDATE KURIR (AUTO SUBMIT) -->
                     <form method="GET" action="{{ url_for('checkout_form_elva') }}">
                         <div class="mb-3">
                             <label class="form-label">Kurir</label>
-                            <select name="kurir_elva" class="form-select" required>
+                            <select name="kurir_elva"
+                                    class="form-select"
+                                    onchange="this.form.submit()"
+                                    required>
+
                                 <option value="">-- Pilih Kurir --</option>
+
                                 <option value="Ambil Sendiri|0"
                                     {% if kurir_elva == 'Ambil Sendiri' %}selected{% endif %}>
                                     Ambil Sendiri (Gratis)
                                 </option>
+
                                 <option value="Hemat|2000"
                                     {% if kurir_elva == 'Hemat' %}selected{% endif %}>
                                     Hemat - Rp2.000
                                 </option>
+
                                 <option value="Reguler|5000"
                                     {% if kurir_elva == 'Reguler' %}selected{% endif %}>
                                     Reguler - Rp5.000
                                 </option>
-                            </select>
 
-                            <button class="btn btn-outline-primary w-100 mt-2">
-                                Update Kurir
-                            </button>
+                            </select>
                         </div>
                     </form>
+
 
                     <hr>
 

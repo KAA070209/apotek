@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Struk</title>
+    <style>
+        body{
+            font-family: monospace;
+            width: 280px;
+            margin: auto;
+            font-size: 12px;
+        }
+        h3{
+            text-align:center;
+            margin-bottom:5px;
+        }
+        hr{
+            border-top:1px dashed black;
+        }
+        .center{text-align:center;}
+        .right{text-align:right;}
+        table{
+            width:100%;
+            font-size:12px;
+        }
+        td{
+            padding:3px 0;
+        }
+    </style>
+</head>
+<body onload="window.print(); setTimeout(() => window.location='/kasir_offline_elva', 1500);">
+
+<h3>APOTEK ELVA</h3>
+<div class="center">Struk Pembayaran</div>
+<hr>
+
+No Faktur : {{ transaksi.no_faktur_elva }} <br>
+Tanggal   : {{ transaksi.tanggal_elva }} <br>
+Kasir     : {{ session.get('nama_elva') or session.get('nama_online_elva') }} <br>
+No Resep  : {{ transaksi.no_resep_elva or '-' }} <br>
+Pasien    : {{ transaksi.nama_lengkap_elva or '-' }} <br>
+Dokter    : {{ transaksi.nama_dokter_elva or '-' }} <br>
+
+
+<hr>
+
+<table>
+{% for item in detail %}
+<tr>
+    <td colspan="2">
+        {{ item.nama_tampil or '-' }}
+        <br>
+        <small>({{ item.jenis_tampil or '-' }})</small>
+
+        {% if item.is_racikan == 1 %}
+            <br><small>Dosis: {{ item.dosis_elva }}</small>
+            <br><small>Catatan: {{ item.catatan_elva }}</small>
+        {% endif %}
+    </td>
+</tr>
+
+<tr>
+    <td>{{ item.jumlah_elva }} x {{ "{:,}".format(item.harga_elva) }}</td>
+    <td class="right">Rp {{ "{:,}".format(item.total_elva) }}</td>
+</tr>
+{% endfor %}
+
+
+
+</table>
+
+
+<hr>
+
+<table>
+<tr>
+    <td>Total Bayar</td>
+    <td class="right">
+        Rp {{ "{:,}".format(transaksi.total_elva) }}
+    </td>
+</tr>
+</table>
+
+<hr>
+
+<div class="center">
+Terima Kasih 🙏<br>
+Semoga Lekas Sembuh
+</div>
+
+</body>
+</html>

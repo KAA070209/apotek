@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Kurir | Elva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        body {
+            background: #f4f6f9;
+        }
+
+        .card {
+            border-radius: 1rem;
+        }
+
+        #reader {
+            width: 100%;
+        }
+
+        .scan-box {
+            border: 2px dashed #0d6efd;
+            border-radius: 12px;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container-fluid">
+            <span class="navbar-brand fw-bold">Dashboard Kurir</span>
+            <a href="/logout_elva" class="btn btn-light btn-sm">Logout</a>
+        </div>
+    </nav>
+
+    <div class="container my-4">
+        <div class="row g-4">
+
+            <!-- LEFT : SCANNER -->
+            <div class="col-lg-5">
+                <div class="card shadow">
+                    <div class="card-body">
+
+                        <h5 class="fw-bold mb-3">Scan Resi</h5>
+
+                        <div class="scan-box">
+                            <div id="reader"></div>
+                        </div>
+
+                        <div class="mt-3">
+                            <input type="text" id="hasil_resi" class="form-control mb-2"
+                                placeholder="No Resi akan muncul disini">
+
+                            <!-- 🔥 FOTO DISEMBUNYIKAN DULU -->
+                            <div id="box_foto" style="display:none;">
+                                <input type="file" id="foto_bukti" class="form-control mb-2" accept="image/*">
+                                <small class="text-muted">
+                                    Upload foto bukti saat paket sampai
+                                </small>
+                            </div>
+
+                            <button onclick="kirimScan()" class="btn btn-primary w-100">
+                                Update Status
+                            </button>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <!-- RIGHT : LIST PAKET -->
+            <div class="col-lg-7">
+
+                <div class="card shadow mb-4">
+                    <div class="card-body">
+                        <h6>Total Paket Aktif</h6>
+                        <h3 class="fw-bold text-primary">{{ total }}</h3>
+                    </div>
+                </div>
+
+                <div class="card shadow">
+                    <div class="card-body">
+
+                        <h6 class="fw-bold mb-3">Daftar Paket</h6>
+
+                        <div class="table-responsive">
+                            <table class="table table-bordered align-middle">
+                                <thead class="table-light">
+                                    <tr>
+                                        <th>No Resi</th>
+                                        <th>No Faktur</th>
+                                        <th>Status</th>
+                                        <th>Alamat</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for p in paket %}
+                                    <tr>
+                                        <td>{{ p.no_resi_elva }}</td>
+                                        <td>{{ p.no_faktur_elva }}</td>
+                                        <td>
+                                            {% if p.status_elva == 'diproses' %}
+                                            <span class="badge bg-warning">Diproses</span>
+                                            {% elif p.status_elva == 'dikemas' %}
+                                            <span class="badge bg-info">Dikemas</span>
+                                            {% elif p.status_elva == 'dalam_perjalanan' %}
+                                            <span class="badge bg-primary">Dalam Perjalanan</span>
+                                            {% elif p.status_elva == 'sampai' %}
+                                            <span class="badge bg-success">Sampai</span>
+                                            {% else %}
+                                            <span class="badge bg-secondary">{{ p.status_elva }}</span>
+                                            {% endif %}
+                                        </td>
+                                        <td>{{ p.alamat_elva }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+<script>
+
+    let currentMode = "scan"; // scan | upload
+
+    function onScanSuccess(decodedText) {
+        document.getElementById("hasil_resi").value = decodedText;
+    }
+
+    let html5QrcodeScanner = new Html5QrcodeScanner(
+        "reader",
+        { fps: 10, qrbox: 250 }
+    );
+
+    html5QrcodeScanner.render(onScanSuccess);
+
+    function kirimScan() {
+
+        let resi = document.getElementById("hasil_resi").value;
+        let boxFoto = document.getElementById("box_foto");
+        let fileInput = document.getElementById("foto_bukti");
+        let file = fileInput.files[0];
+
+        if (!resi) {
+            alert("Scan resi dulu!");
+            return;
+        }
+
+        // Jika mode upload tapi belum ada foto
+        if (currentMode === "upload" && !file) {
+            alert("Upload foto bukti dulu!");
+            return;
+        }
+
+        let formData = new FormData();
+        formData.append("no_resi", resi);
+
+        if (file) {
+            formData.append("foto_bukti", file);
+        }
+
+        fetch("/kurir_scan_resi_elva", {
+            method: "POST",
+            body: formData
+        })
+        .then(res => res.json())
+        .then(data => {
+
+            if (data.status === "need_photo") {
+
+                boxFoto.style.display = "block";
+                currentMode = "upload";
+
+                document.querySelector("button").innerText = "Konfirmasi Paket Sampai";
+                document.querySelector("button").classList.remove("btn-primary");
+                document.querySelector("button").classList.add("btn-success");
+
+                alert("Status menjadi Dalam Perjalanan.\nUpload foto saat sampai.");
+
+                return;
+            }
+
+            if (data.status === "success") {
+                alert("✅ " + data.message);
+                location.reload();
+            }
+            else {
+                alert("❌ " + data.message);
+            }
+
+        })
+        .catch(err => {
+            alert("Terjadi kesalahan sistem");
+            console.error(err);
+        });
+    }
+
+</script>
+
+</body>
+
+</html>

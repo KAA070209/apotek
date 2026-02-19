@@ -4,6 +4,36 @@
     <meta charset="UTF-8">
     <title>Detail Pesanan</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <style>
+        .timeline{
+            position:relative;
+            padding-left:25px;
+        }
+        .timeline::before{
+            content:'';
+            position:absolute;
+            left:8px;
+            top:0;
+            bottom:0;
+            width:2px;
+            background:#dee2e6;
+        }
+        .timeline-item{
+            position:relative;
+            margin-bottom:20px;
+        }
+        .timeline-item::before{
+            content:'';
+            position:absolute;
+            left:-18px;
+            top:4px;
+            width:12px;
+            height:12px;
+            background:#0d6efd;
+            border-radius:50%;
+        }
+    </style>
 </head>
 <body class="bg-light">
 
@@ -11,12 +41,27 @@
     <div class="card shadow">
         <div class="card-body">
 
-            <h5 class="mb-3">Pesanan Berhasil Dibuat 🎉</h5>
+            <h5 class="mb-3">Detail Pesanan 🎉</h5>
 
-            <p>No Faktur: <strong>{{ transaksi.no_faktur_elva }}</strong></p>
-            <p>Status: <span class="badge bg-warning">{{ transaksi.status_elva }}</span></p>
-            <p>Pilihan: {{ transaksi.kurir_elva }}</p>
-            <p>No Resi: {{ transaksi.no_resi_elva or '-' }}</p>
+            <p>No Faktur:
+                <strong>{{ transaksi.no_faktur_elva }}</strong>
+            </p>
+
+            <p>Status:
+                <span id="statusRealtime"
+                      class="badge bg-warning">
+                      {{ transaksi.status_pengiriman_elva }}
+                </span>
+            </p>
+
+            <p>Pilihan:
+                {{ transaksi.kurir_elva }}
+            </p>
+
+            <p>No Resi:
+                {{ transaksi.no_resi_elva or '-' }}
+            </p>
+
             {% if qr_path %}
             <hr>
             <div class="text-center mt-4">
@@ -28,9 +73,9 @@
             </div>
             {% endif %}
 
-
             <hr>
 
+            <!-- LIST PRODUK -->
             <ul class="list-group mb-3">
                 {% for item in items %}
                 <li class="list-group-item d-flex justify-content-between">
@@ -41,7 +86,7 @@
                         </small>
                     </div>
                     <span>
-                        Rp {{ item.total_elva }}
+                        Rp {{ "{:,.0f}".format(item.total_elva) }}
                     </span>
                 </li>
                 {% endfor %}
@@ -49,17 +94,73 @@
 
             <h5 class="text-end">
                 Total Bayar:
-                <strong>Rp {{ transaksi.total_elva }}</strong>
+                <strong>Rp {{ "{:,.0f}".format(transaksi.total_elva) }}</strong>
             </h5>
 
+            <!-- 🔥 TIMELINE TRACKING -->
+            {% if tracking %}
+            <hr>
+            <h6 class="fw-bold">Tracking Pengiriman</h6>
+
+            <div class="timeline mt-3">
+                {% for t in tracking %}
+                <div class="timeline-item">
+                    <div class="fw-bold text-primary">
+                        {{ t.status_tracking }}
+                    </div>
+                    <div class="small text-muted">
+                        {{ t.keterangan_tracking }}
+                    </div>
+                    <div class="small text-muted">
+                        {{ t.waktu_tracking.strftime('%d-%m-%Y %H:%M') }}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
             <a href="{{ url_for('shop_online_elva') }}"
-               class="btn btn-primary mt-3">
+               class="btn btn-primary mt-4">
                 Kembali Belanja
             </a>
 
         </div>
     </div>
 </div>
+
+<!-- 🔥 REALTIME AUTO UPDATE -->
+<script>
+setInterval(function(){
+
+    fetch("/api_status/{{ transaksi.id_transaksi_elva }}")
+    .then(res => res.json())
+    .then(data => {
+
+        let badge = document.getElementById("statusRealtime");
+        badge.innerText = data.status_pengiriman_elva;
+
+        badge.className = "badge";
+
+        if(data.status_pengiriman_elva === "diproses"){
+            badge.classList.add("bg-warning");
+        }
+        else if(data.status_pengiriman_elva === "dikemas"){
+            badge.classList.add("bg-info");
+        }
+        else if(data.status_pengiriman_elva === "dalam_perjalanan"){
+            badge.classList.add("bg-primary");
+        }
+        else if(data.status_pengiriman_elva === "sampai"){
+            badge.classList.add("bg-success");
+        }
+        else{
+            badge.classList.add("bg-secondary");
+        }
+
+    });
+
+}, 5000);
+</script>
 
 </body>
 </html>

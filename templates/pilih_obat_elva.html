@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Pilih Obat - Apotek Elva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; }
+        body { background:#f8f9fa; color:#333; }
+
+        .header {
+            background:#2980b9;
+            color:white;
+            padding:18px 30px;
+        }
+
+        .container { padding:20px; }
+
+        table {
+            width:100%;
+            border-collapse:collapse;
+            background:white;
+            border-radius:8px;
+            overflow:hidden;
+            box-shadow:0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        th, td {
+            padding:12px;
+            border-bottom:1px solid #eee;
+            text-align:left;
+        }
+
+        th {
+            background:#2980b9;
+            color:white;
+        }
+
+        td img {
+            width:50px;
+            border-radius:6px;
+        }
+
+        .btn {
+            padding:12px;
+            background:#3498db;
+            color:white;
+            border:none;
+            border-radius:8px;
+            cursor:pointer;
+            font-weight:600;
+            margin-top:20px;
+            width:100%;
+        }
+
+        .btn:hover { background:#2980b9; }
+
+        .loading {
+            display:none;
+            margin-top:10px;
+            text-align:center;
+            color:#2980b9;
+            font-weight:600;
+        }
+    </style>
+</head>
+<body>
+
+<div class="header">
+    <h2>💊 Pilih Obat - Apotek Elva</h2>
+</div>
+
+<div class="container">
+
+    <div class="obat-list">
+        <table>
+            <thead>
+                <tr>
+                    <th>No</th>
+                    <th>Kode</th>
+                    <th>Nama</th>
+                    <th>Jenis</th>
+                    <th>Expire</th>
+                    <th>Gambar</th>
+                    <th>Pilih</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for obat in obat_list %}
+                <tr>
+                    <td>{{ loop.index }}</td>
+                    <td>{{ obat.kode_obat_elva }}</td>
+                    <td>{{ obat.nama_obat_elva }}</td>
+                    <td>{{ obat.jenis_obat_elva }}</td>
+                    <td>{{ obat.tanggal_exp_elva }}</td>
+                    <td>
+                        {% if obat.gambar_elva %}
+                            <img src="{{ url_for('static', filename='upload_obat/' + obat.gambar_elva) }}">
+                        {% else %}
+                            <img src="{{ url_for('static', filename='images/default.png') }}">
+                        {% endif %}
+                    </td>
+                    <td>
+                        <input type="checkbox" class="obat-checkbox" value="{{ obat.id_obat_elva }}">
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <button class="btn" onclick="tambahObat()">Tambah Obat ke Keranjang</button>
+
+    <div class="loading" id="loadingText">Menambahkan ke keranjang...</div>
+
+</div>
+
+<script>
+function tambahObat(){
+
+    let selected = [];
+    document.querySelectorAll('.obat-checkbox:checked')
+        .forEach(cb => selected.push(cb.value));
+
+    if(selected.length === 0){
+        alert("Pilih minimal 1 obat");
+        return;
+    }
+
+    fetch('/tambah_obat_ke_keranjang',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({obat_ids:selected})
+    })
+    .then(res=>res.json())
+    .then(data=>{
+        if(data.status === "success"){
+
+            // kirim data ke halaman kasir via localStorage
+            localStorage.setItem("keranjang_update", JSON.stringify(data));
+
+            // tutup halaman / kembali tanpa reload full
+            window.location.href = "/kasir_offline_elva";
+        }
+    });
+}
+
+</script>
+
+</body>
+</html>

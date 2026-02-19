@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Tambah Dokter - Apotek Elva</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        /* CSS untuk Tema Biru Putih */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .container {
+            width: 80%;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        h1 {
+            text-align: center;
+            color: #2980b9;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 10px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            font-size: 14px;
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            background-color: #3498db;
+            color: white;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Tambah Dokter</h1>
+        <form method="POST">
+            <div class="form-group">
+                <label for="nama_dokter">Nama Dokter</label>
+                <input type="text" name="nama_dokter" id="nama_dokter" required>
+            </div>
+            <div class="form-group">
+                <label for="spesialis">Spesialis</label>
+                <input type="text" name="spesialis" id="spesialis" required>
+            </div>
+            <div class="form-group">
+                <label for="alamat">Alamat</label>
+                <input type="text" name="alamat" id="alamat" required>
+            </div>
+            <div class="form-group">
+                <label for="kota">Kota</label>
+                <input type="text" name="kota" id="kota" required>
+            </div>
+            <div class="form-group">
+                <label for="no_tlp">No. Telepon</label>
+                <input type="text" name="no_tlp" id="no_tlp" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Email</label>
+                <input type="email" name="email" id="email" required>
+            </div>
+            <div class="form-group">
+                <label for="tgl_mulai_tugas">Tanggal Mulai Tugas</label>
+                <input type="date" name="tgl_mulai_tugas" id="tgl_mulai_tugas" required>
+            </div>
+            <button type="submit">Tambah Dokter</button>
+        </form>
+    </div>
+</body>
+</html>

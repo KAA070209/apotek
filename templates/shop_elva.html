@@ -36,32 +36,70 @@
         }
 
         /* MOBILE APP LAYER */
-        @media (max-width:768px){
-            body{
-                padding-bottom:70px;
-            }
-            .checkout-box{
-                position:static;
-                margin-top:1rem;
-            }
-            .mobile-app-nav{
-                position:fixed;
-                bottom:0;
-                left:0;
-                right:0;
-                background:#ffffff;
-                border-top:1px solid #dee2e6;
-                z-index:1040;
-            }
-            .mobile-app-nav a{
-                font-size:12px;
-                color:#555;
-                text-decoration:none;
-            }
-            .mobile-app-nav i{
-                font-size:20px;
-            }
-        }
+        /* MOBILE APP NAV IMPROVED */
+@media (max-width:768px){
+
+    body{
+        padding-bottom:80px;
+    }
+
+    .mobile-app-nav{
+        position:fixed;
+        bottom:0;
+        left:0;
+        right:0;
+        background:#ffffff;
+        border-top:1px solid #e9ecef;
+        box-shadow:0 -2px 10px rgba(0,0,0,0.05);
+        z-index:1050;
+        padding:6px 0;
+    }
+
+    .mobile-app-nav a{
+        flex:1;
+        text-align:center;
+        font-size:11px;
+        color:#6c757d;
+        text-decoration:none;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        position:relative;
+        transition:0.2s;
+    }
+
+    .mobile-app-nav a i{
+        font-size:20px;
+        margin-bottom:2px;
+    }
+
+    .mobile-app-nav a.active{
+        color:#0d6efd;
+        font-weight:600;
+    }
+
+    .mobile-app-nav a.active i{
+        transform:scale(1.1);
+    }
+
+    .mobile-app-nav .badge{
+        font-size:9px;
+        padding:4px 6px;
+        border-radius:50px;
+    }
+
+}
+.card-habis {
+    opacity: 0.6;
+    filter: grayscale(60%);
+    pointer-events: none;
+}
+
+.card-habis:hover {
+    transform: none !important;
+}
+
     </style>
 </head>
 <body>
@@ -72,11 +110,23 @@
         <a class="navbar-brand fw-bold" href="#">Elva Pharmacy</a>
 
         <div class="ms-auto d-flex align-items-center gap-3">
+
+    <!-- KERANJANG -->
             <a href="{{ url_for('cart_elva') }}" class="btn btn-light position-relative">
                 <i class="bi bi-cart3"></i>
                 {% if session.cart_elva %}
                 <span class="position-absolute top-0 start-100 translate-middle badge bg-danger">
                     {{ session.cart_elva|length }}
+                </span>
+                {% endif %}
+            </a>
+
+            <!-- 🔥 RIWAYAT TRANSAKSI -->
+            <a href="{{ url_for('riwayat_transaksi_elva') }}" class="btn btn-light position-relative">
+                <i class="bi bi-clock-history"></i>
+                {% if riwayat_transaksi %}
+                <span class="position-absolute top-0 start-100 translate-middle badge bg-success">
+                    {{ riwayat_transaksi|length }}
                 </span>
                 {% endif %}
             </a>
@@ -89,6 +139,7 @@
                 Logout
             </a>
         </div>
+
     </div>
 </nav>
 
@@ -133,8 +184,9 @@
     <div class="row g-4">
         {% for obat in obat_elva %}
         <div class="col-6 col-md-4">
-            <div class="card h-100 shadow-sm">
-                <img src="{{ url_for('static', filename='gambar_obat/' + obat.gambar_elva) if obat.gambar_elva else 'https://via.placeholder.com/300x200' }}"
+            <div class="card h-100 shadow-sm 
+    {% if obat.stok_elva <= 0 %}card-habis{% endif %}">
+                <img src="{{ url_for('static', filename='upload_obat/' + obat.gambar_elva) if obat.gambar_elva else 'https://via.placeholder.com/300x200' }}"
                      class="card-img-top">
 
                 <div class="card-body d-flex flex-column">
@@ -204,19 +256,42 @@
 
             <div class="list-group small">
                 {% for p in list_pesanan %}
-                <a href="{{ url_for('detail_pesanan_elva', id_transaksi=p.id_transaksi_elva) }}"
-                class="list-group-item list-group-item-action">
+                <div class="list-group-item">
+
                     <div class="fw-bold">{{ p.no_faktur_elva }}</div>
+
                     <div class="text-muted">
                         {{ p.tanggal_elva.strftime('%d-%m-%Y') }} ·
                         Rp {{ "{:,.0f}".format(p.total_elva) }}
                     </div>
-                    <span class="badge bg-info text-dark">
-                        {{ p.status_elva }}
-                    </span>
-                </a>
+
+                    {% if p.status_elva == 'diproses' %}
+                    <span class="badge bg-primary">Diproses</span>
+
+                    {% elif p.status_pengiriman == 'dikirim' %}
+                    <span class="badge bg-warning text-dark">Dikirim</span>
+
+                    {% elif p.status_tracking == 'sampai' %}
+                    <span class="badge bg-success">Selesai</span>
+
+                    {% else %}
+                    <span class="badge bg-secondary">{{ p.status_elva }}</span>
+                    {% endif %}
+
+                    <div class="mt-2 d-flex gap-2 flex-wrap">
+
+                        <a href="{{ url_for('detail_pesanan_elva', id_transaksi=p.id_transaksi_elva) }}"
+                        class="btn btn-sm btn-outline-primary">
+                        Detail
+                        </a>
+
+
+                    </div>
+
+                                    </div>
                 {% endfor %}
             </div>
+
             {% endif %}
         </div>
     </div>
@@ -227,18 +302,21 @@
 <!-- MOBILE APP NAV -->
 <!-- MOBILE APP NAV -->
 <div class="mobile-app-nav d-md-none">
-    <div class="d-flex justify-content-around text-center py-2">
+    <div class="d-flex">
 
         <!-- HOME -->
-        <a href="{{ url_for('shop_online_elva') }}">
-            <i class="bi bi-house"></i><br>
+        <a href="{{ url_for('shop_online_elva') }}"
+           class="{% if request.endpoint == 'shop_online_elva' %}active{% endif %}">
+            <i class="bi bi-house"></i>
             Home
         </a>
 
         <!-- CART -->
-        <a href="{{ url_for('cart_elva') }}" class="position-relative">
-            <i class="bi bi-cart3"></i><br>
+        <a href="{{ url_for('cart_elva') }}"
+           class="position-relative {% if request.endpoint == 'cart_elva' %}active{% endif %}">
+            <i class="bi bi-cart3"></i>
             Cart
+
             {% if session.cart_elva %}
             <span class="position-absolute top-0 start-50 translate-middle badge bg-danger">
                 {{ session.cart_elva|length }}
@@ -247,24 +325,43 @@
         </a>
 
         <!-- PESANAN -->
-        <a href="{{ url_for('shop_online_elva') }}#pesanan" class="position-relative">
-            <i class="bi bi-receipt"></i><br>
+        <a href="{{ url_for('riwayat_transaksi_elva') }}"
+           class="{% if request.endpoint == 'riwayat_transaksi_elva' %}active{% endif %}">
+            <i class="bi bi-receipt"></i>
             Pesanan
-            {% if list_pesanan %}
-            <span class="position-absolute top-0 start-50 translate-middle badge bg-primary">
-                {{ list_pesanan|length }}
-            </span>
-            {% endif %}
         </a>
 
         <!-- LOGOUT -->
         <a href="{{ url_for('logout_elva') }}" class="text-danger">
-            <i class="bi bi-box-arrow-right"></i><br>
+            <i class="bi bi-box-arrow-right"></i>
             Logout
         </a>
 
     </div>
 </div>
+
+<script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    const pesanan = {{ list_pesanan|tojson }};
+
+    pesanan.forEach(p => {
+
+        if(p.status_pengiriman === "sampai"){
+
+            let key = "notif_sampai_" + p.id_transaksi_elva;
+
+            if(!localStorage.getItem(key)){
+                alert("📦 Pesanan " + p.no_faktur_elva + " sudah sampai!\nTerima kasih telah berbelanja di Elva Pharmacy");
+                localStorage.setItem(key, "1");
+            }
+
+        }
+
+    });
+
+});
+</script>
 
 </body>
 </html>

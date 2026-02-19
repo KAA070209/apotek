@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Checkout - Apotek Elva</title>
+    <style>
+        body{
+            font-family: Arial;
+            background:#f4f6f9;
+            padding:30px;
+        }
+
+        .container{
+            display:flex;
+            gap:20px;
+        }
+
+        .left{
+            flex:2;
+            background:white;
+            padding:20px;
+            border-radius:10px;
+        }
+
+        .right{
+            flex:1;
+            background:white;
+            padding:20px;
+            border-radius:10px;
+            height:fit-content;
+        }
+
+        table{
+            width:100%;
+            border-collapse:collapse;
+        }
+
+        th,td{
+            padding:10px;
+            border-bottom:1px solid #ddd;
+            text-align:center;
+        }
+
+        th{
+            background:#f1f1f1;
+        }
+
+        .summary-row{
+            display:flex;
+            justify-content:space-between;
+            margin-bottom:10px;
+            font-size:16px;
+        }
+
+        .grand-total{
+            font-size:22px;
+            font-weight:bold;
+            color:#27ae60;
+        }
+
+        .btn{
+            width:100%;
+            padding:15px;
+            border:none;
+            border-radius:6px;
+            cursor:pointer;
+            font-weight:bold;
+            font-size:16px;
+            margin-top:10px;
+        }
+
+        .btn-success{
+            background:#27ae60;
+            color:white;
+        }
+
+        .btn-danger{
+            background:#e74c3c;
+            color:white;
+            text-decoration:none;
+            display:inline-block;
+            text-align:center;
+        }
+
+        input,select{
+            width:100%;
+            padding:10px;
+            margin-top:5px;
+            margin-bottom:10px;
+        }
+
+        .header-box{
+            background:white;
+            padding:15px;
+            border-radius:10px;
+            margin-bottom:20px;
+        }
+    </style>
+</head>
+<body>
+
+<h2>🧾 Checkout Transaksi - Apotek Elva</h2>
+<div class="header-box">
+    <b>No Faktur:</b> {{ no_faktur }} <br>
+    <b>Tanggal:</b> {{ today }} <br>
+    <b>Jam:</b> {{ waktu }} <br>
+    <b>Kasir:</b> {{ session['nama_online_elva'] }} <br>
+    <hr>
+    <b>ID Pasien:</b> {{ id_pasien }} <br>
+    <b>Nama Pasien:</b> {{ nama_pasien }} <br>
+    <b>No Resep:</b> {{ no_resep }} <br>
+    <b>Dokter:</b> {{ nama_dokter }} <br>
+
+</div>
+
+
+<div class="container">
+
+    <!-- LEFT SIDE -->
+    <div class="left">
+        <h3>Detail Item</h3>
+        <table>
+            <tr>
+               <th>Nama</th>
+                <th>Jenis Obat</th>
+                <th>Qty</th>
+                <th>Harga</th>
+                <th>Total</th>
+
+            </tr>
+
+            <span>Rp {{ "{:,}".format(subtotal|int) }}</span>
+            {% for item in keranjang %}
+
+            <tr>
+                <td>{{ item.nama }}</td>
+                <td>
+                    {{ item.jenis_obat_elva if item.jenis_obat_elva else '-' }}
+                </td>
+                <td>{{ item.jumlah }}</td>
+                <td>Rp {{ "{:,}".format(item.harga) }}</td>
+                <td>Rp {{ "{:,}".format(item.total) }}</td>
+            </tr>
+
+            {% endfor %}
+        </table>
+    </div>
+
+    <!-- RIGHT SIDE -->
+    <div class="right">
+
+
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span>Rp {{ "{:,}".format(subtotal|int) }}</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Diskon</span>
+            <span>Rp {{ "{:,}".format(diskon|int) }}</span>
+        </div>
+
+        <div class="summary-row">
+            <span>Pajak </span>
+            <span>Rp {{ "{:,}".format(pajak|int) }}</span>
+        </div>
+
+        <hr>
+
+        <div class="summary-row grand-total">
+            <span>Total Bayar</span>
+            <span>Rp {{ "{:,}".format(grand_total|int) }}</span>
+        </div>
+
+        <hr>
+
+        <form method="POST" action="/proses_bayar_kasir_elva">
+
+            <label>Metode Bayar</label>
+            <select name="metode_bayar_elva"
+                id="metode_bayar"
+                onchange="togglePembayaran()"
+                required>
+            <option value="">-- Pilih --</option>
+            <option value="cash">Cash</option>
+            <option value="transfer">Transfer</option>
+            <option value="qris">QRIS</option>
+        </select>
+
+            <div id="bayar_section">
+                <label>Jumlah Tunai</label>
+                <input type="number" id="bayar" name="bayar"
+                    oninput="hitungKembalian()">
+            </div>
+
+            <div class="summary-row">
+                <span>Kembalian</span>
+                <span id="kembalian">Rp 0</span>
+            </div>
+
+            <button type="submit"
+                    class="btn btn-success"
+                    onclick="return validasiBayar()">
+                💰 BAYAR SEKARANG
+            </button>
+
+            <a href="/kasir_offline_elva"
+               class="btn btn-danger">
+                ⬅ BATAL
+            </a>
+
+        </form>
+
+    </div>
+
+</div>
+
+<script>
+let total = {{ grand_total|int }};
+
+
+function hitungKembalian(){
+    let bayar = parseFloat(document.getElementById("bayar").value) || 0;
+    let kembali = bayar - total;
+    if(kembali < 0) kembali = 0;
+    document.getElementById("kembalian").innerHTML =
+        "Rp " + kembali.toLocaleString();
+}
+function togglePembayaran(){
+    let metode = document.getElementById("metode_bayar").value;
+    let bayarSection = document.getElementById("bayar_section");
+
+    if(metode === "cash"){
+        bayarSection.style.display = "block";
+        document.getElementById("bayar").setAttribute("required", "required");
+    } else {
+        bayarSection.style.display = "none";
+        document.getElementById("bayar").removeAttribute("required");
+        document.getElementById("kembalian").innerHTML = "Rp 0";
+    }
+}
+function validasiBayar(){
+    let metode = document.getElementById("metode_bayar").value;
+    let bayar = parseFloat(document.getElementById("bayar").value) || 0;
+
+    if(metode === "cash"){
+        if(bayar < total){
+            alert("Pembayaran kurang!");
+            return false;
+        }
+    }
+
+    return confirm("Yakin ingin menyelesaikan transaksi?");
+}
+
+</script>
+
+</body>
+</html>

@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Dashboard Super Premium Apotek</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <style>
+        /* GLOBAL */
+        body {
+            background: linear-gradient(135deg, #e3f2fd, #f1f8ff);
+            font-family: 'Segoe UI', sans-serif;
+        }
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            height: 350px;   /* WAJIB */
+        }
+
+        /* SIDEBAR */
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            position: fixed;
+            background: linear-gradient(180deg, #0d47a1, #1565c0);
+            color: white;
+            padding-top: 20px;
+            box-shadow: 4px 0 20px rgba(0, 0, 0, 0.1);
+        }
+
+        .sidebar h4 {
+            text-align: center;
+            font-weight: bold;
+            margin-bottom: 30px;
+        }
+
+        .sidebar a {
+            color: white;
+            display: flex;
+            align-items: center;
+            padding: 14px 20px;
+            text-decoration: none;
+            margin: 6px 12px;
+            border-radius: 12px;
+            transition: 0.3s;
+        }
+
+        .sidebar a i {
+            margin-right: 12px;
+        }
+
+        .sidebar a:hover {
+            background: white;
+            color: #1565c0;
+            transform: translateX(5px);
+        }
+        .sidebar a.active {
+            background: white;
+            color: #1976d2;
+        }
+        /* CONTENT */
+        .content {
+            margin-left: 250px;
+            padding: 30px;
+        }
+
+        /* HEADER */
+        .header-box {
+            background: white;
+            padding: 20px;
+            border-radius: 18px;
+            box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+            margin-bottom: 25px;
+        }
+
+        /* CARD PREMIUM */
+        .card-super {
+            border: none;
+            border-radius: 18px;
+            padding: 20px;
+            background: linear-gradient(145deg, #ffffff, #f5faff);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+            transition: 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card-super::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 5px;
+            left: 0;
+            bottom: 0;
+            background: linear-gradient(90deg, #42a5f5, #66bb6a);
+        }
+
+        .card-super:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 12px 28px rgba(0, 0, 0, 0.12);
+        }
+
+        .icon-box {
+            font-size: 32px;
+            opacity: 0.8;
+        }
+
+        /* CHART */
+        .chart-container {
+            background: white;
+            padding: 25px;
+            border-radius: 18px;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        /* TITLE */
+        .title {
+            font-weight: 600;
+            color: #1565c0;
+        }
+   /* ================= MOBILE PREMIUM ================= */
+
+.bottom-nav{
+    display:none;
+}
+
+@media (max-width:768px){
+
+    .sidebar{
+        display:none;
+    }
+
+    .content{
+        margin-left:0;
+        padding:15px;
+        padding-bottom:95px;
+    }
+
+    .header-box{
+        padding:14px;
+        border-radius:14px;
+    }
+
+    .header-box h3{
+        font-size:18px;
+    }
+
+    .card-super{
+        padding:14px;
+        border-radius:14px;
+    }
+
+    .card-super h3{
+        font-size:18px;
+    }
+
+    .card-super h6{
+        font-size:13px;
+    }
+
+    table{
+        font-size:12px;
+    }
+
+    /* ===== BOTTOM NAV HP ===== */
+    .bottom-nav{
+        position:fixed;
+        bottom:0;
+        left:0;
+        width:100%;
+        height:70px;
+        background:#ffffff;
+        display:flex;
+        justify-content:space-around;
+        align-items:center;
+        box-shadow:0 -5px 20px rgba(0,0,0,0.08);
+        z-index:1000;
+        border-top-left-radius:20px;
+        border-top-right-radius:20px;
+    }
+
+    .bottom-nav a{
+        flex:1;
+        text-decoration:none;
+        color:#94a3b8;
+        font-size:10px;
+        display:flex;
+        flex-direction:column;
+        align-items:center;
+        justify-content:center;
+        transition:0.3s ease;
+        position:relative;
+    }
+
+    .bottom-nav a i{
+        font-size:18px;
+        margin-bottom:3px;
+    }
+
+    .bottom-nav a.active{
+        color:#1565c0;
+        font-weight:600;
+        transform:translateY(-5px);
+    }
+
+    .bottom-nav a.active::after{
+        content:"";
+        width:5px;
+        height:5px;
+        background:#1565c0;
+        border-radius:50%;
+        position:absolute;
+        bottom:6px;
+    }
+
+}
+
+/* ===== OFFCANVAS MOBILE ===== */
+.custom-offcanvas{
+    height:85vh !important;
+    border-top-left-radius:25px;
+    border-top-right-radius:25px;
+}
+
+.custom-offcanvas .list-group-item{
+    border:none;
+    padding:14px 10px;
+    font-size:13px;
+}
+
+
+    </style>
+</head>
+
+<body>
+
+    <!-- SIDEBAR -->
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h4><i class="fa-solid fa-clinic-medical"></i> APOTEK</h4>
+
+        <a href="/dashboard_admin_elva" class="active"><i class="fa fa-chart-line"></i> Dashboard</a>
+        <a href="/admin_user_elva"><i class="fa fa-users"></i> Data User</a>
+        <a href="/admin_obat_elva"><i class="fa fa-pills"></i> Data Obat</a>
+        <a href="/admin_kategori_elva"><i class="fa fa-layer-group"></i> Kategori</a>
+        <a href="/admin_transaksi_elva"><i class="fa fa-cash-register"></i> Transaksi</a>
+        <a href="/admin_pengiriman_elva"><i class="fa fa-truck"></i> Pengiriman</a>
+        <a href="/admin_gudang_elva"><i class="fa fa-warehouse"></i> Gudang</a>
+        <!-- New Gudang Section -->
+        <a href="/admin_peracik_elva"><i class="fa fa-stethoscope"></i> Data Resep + Racikan</a>
+        <a href="/logout_elva"><i class="fa fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+        <!-- HEADER -->
+        <div class="header-box d-flex justify-content-between align-items-center">
+            <div>
+                <h3 class="title">Dashboard Apotek</h3>
+                <p class="text-muted mb-0">Monitoring sistem penjualan dan stok obat</p>
+            </div>
+            <i class="fa-solid fa-user-nurse fa-2x text-primary"></i>
+        </div>
+
+        <!-- STATISTIK -->
+        <div class="row g-4">
+
+            <div class="col-md-3">
+                <div class="card-super">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Total User</h6>
+                            <h3>{{ total_user }}</h3>
+                        </div>
+                        <div class="icon-box text-primary">
+                            <i class="fa fa-users"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-super">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Total Obat</h6>
+                            <h3>{{ total_obat }}</h3>
+                        </div>
+                        <div class="icon-box text-success">
+                            <i class="fa fa-capsules"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-super">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Total Transaksi</h6>
+                            <h3>{{ total_transaksi }}</h3>
+                        </div>
+                        <div class="icon-box text-warning">
+                            <i class="fa fa-receipt"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card-super">
+                    <div class="d-flex justify-content-between">
+                        <div>
+                            <h6>Pendapatan</h6>
+                            <h3>Rp {{ total_pendapatan }}</h3>
+                        </div>
+                        <div class="icon-box text-danger">
+                            <i class="fa fa-money-bill-wave"></i>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <hr class="my-5">
+
+        <!-- CHART -->
+        <div class="chart-container">
+            <h5 class="title mb-3">Grafik Penjualan Obat</h5>
+            <canvas id="grafikPenjualan"></canvas>
+        </div>
+
+    </div>
+
+    <script>
+document.addEventListener("DOMContentLoaded", function(){
+
+    var ctx = document.getElementById('grafikPenjualan').getContext('2d');
+
+    var gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, "rgba(33,150,243,0.5)");
+    gradient.addColorStop(1, "rgba(33,150,243,0)");
+
+    new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ labels | safe }},
+            datasets: [{
+                label: 'Penjualan',
+                data: {{ values | safe }},
+                borderColor: '#2196f3',
+                backgroundColor: gradient,
+                fill: true,
+                tension: 0.4,
+                pointRadius: 4,
+                pointBackgroundColor: '#2196f3'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    display: true
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+});
+</script>
+<div class="bottom-nav">
+
+    <a href="/dashboard_admin_elva"
+       class="{% if request.path == '/dashboard_admin_elva' %}active{% endif %}">
+        <i class="fa fa-home"></i>
+        <span>Home</span>
+    </a>
+
+    <a href="/admin_user_elva"
+       class="{% if request.path == '/admin_user_elva' %}active{% endif %}">
+        <i class="fa fa-users"></i>
+        <span>User</span>
+    </a>
+
+    <a href="/admin_obat_elva"
+       class="{% if request.path == '/admin_obat_elva' %}active{% endif %}">
+        <i class="fa fa-pills"></i>
+        <span>Obat</span>
+    </a>
+
+    <a href="/admin_transaksi_elva"
+       class="{% if request.path == '/admin_transaksi_elva' %}active{% endif %}">
+        <i class="fa fa-cash-register"></i>
+        <span>Transaksi</span>
+    </a>
+
+    <a data-bs-toggle="offcanvas" href="#menuLainnya">
+        <i class="fa fa-bars"></i>
+        <span>Lainnya</span>
+    </a>
+
+</div>
+
+<!-- ================= OFFCANVAS MENU ================= -->
+<div class="offcanvas offcanvas-bottom custom-offcanvas" tabindex="-1" id="menuLainnya">
+
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">Menu Lainnya</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+
+    <div class="offcanvas-body">
+
+        <div class="list-group">
+
+            <a href="/admin_kategori_elva" class="list-group-item list-group-item-action">
+                <i class="fa fa-layer-group me-2"></i> Kategori
+            </a>
+
+            <a href="/admin_pengiriman_elva" class="list-group-item list-group-item-action">
+                <i class="fa fa-truck me-2"></i> Pengiriman
+            </a>
+
+            <a href="/admin_gudang_elva" class="list-group-item list-group-item-action">
+                <i class="fa fa-warehouse me-2"></i> Gudang
+            </a>
+
+            <a href="/admin_peracik_elva" class="list-group-item list-group-item-action">
+                <i class="fa fa-stethoscope me-2"></i> Data Resep + Racikan
+            </a>
+
+            <a href="/logout_elva" class="list-group-item list-group-item-action text-danger">
+                <i class="fa fa-sign-out-alt me-2"></i> Logout
+            </a>
+
+        </div>
+
+    </div>
+</div>
+</body>
+
+</html>

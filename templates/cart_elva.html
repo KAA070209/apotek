@@ -53,36 +53,85 @@
 
     {% if cart_elva %}
 
-    <div class="card shadow-sm mb-3">
-        <div class="card-body p-0">
-            <table class="table table-striped mb-0">
-                <thead class="table-primary">
-                    <tr>
-                        <th>Nama Obat</th>
-                        <th class="text-end">Harga</th>
-                        <th class="text-center">Jumlah</th>
-                        <th class="text-end">Subtotal</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for item in cart_elva %}
-                    <tr>
-                        <td>{{ item.nama_obat_elva }}</td>
-                        <td class="text-end">
-                            Rp {{ "{:,.0f}".format(item.harga_elva) }}
-                        </td>
-                        <td class="text-center">
-                            {{ item.jumlah_elva }}
-                        </td>
-                        <td class="text-end fw-bold">
-                            Rp {{ "{:,.0f}".format(item.harga_elva * item.jumlah_elva) }}
-                        </td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
+   <div class="card shadow-sm mb-3">
+    <div class="card-body p-0">
+<div class="card shadow-sm mb-3">
+    <div class="card-body p-0">
+
+        <table class="table table-striped mb-0">
+            <thead class="table-primary">
+                <tr>
+                    <th width="5%">
+                        <input type="checkbox" id="selectAll">
+                    </th>
+                    <th>Nama Obat</th>
+                    <th class="text-end">Harga</th>
+                    <th class="text-center">Jumlah</th>
+                    <th class="text-end">Subtotal</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for item in cart_elva %}
+                <tr>
+                    <td>
+                        <input type="checkbox" 
+                               name="selected_item" 
+                               value="{{ item.id_obat_elva }}"
+                               class="item-checkbox delete-checkbox">
+                    </td>
+
+                    <td>{{ item.nama_obat_elva }}</td>
+
+                    <td class="text-end">
+                        Rp {{ "{:,.0f}".format(item.harga_elva) }}
+                    </td>
+
+                    <td class="text-center">
+                        <div class="d-flex justify-content-center align-items-center gap-2">
+
+                            <!-- MINUS -->
+                            <form method="POST"
+                                  action="{{ url_for('decrease_qty_elva', id_obat=item.id_obat_elva) }}">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-danger">
+                                    <i class="bi bi-dash"></i>
+                                </button>
+                            </form>
+
+                            <span class="fw-bold px-2">
+                                {{ item.jumlah_elva }}
+                            </span>
+                            <form method="POST"
+                                action="{{ url_for('increase_qty_elva', id_obat=item.id_obat_elva) }}">
+                                <button type="submit"
+                                        class="btn btn-sm btn-outline-success"
+                                        {% if item.jumlah_elva >= item.stok_elva %}disabled{% endif %}>
+                                    <i class="bi bi-plus"></i>
+                                </button>
+                            </form>
+
+                        </div>
+                    </td>
+
+                    <td class="text-end fw-bold">
+                        Rp {{ "{:,.0f}".format(item.harga_elva * item.jumlah_elva) }}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
     </div>
+</div>
+
+<!-- FORM DELETE TERPISAH -->
+<form method="POST" action="{{ url_for('delete_cart_elva') }}">
+    <div id="hiddenInputs"></div>
+
+    <button type="submit" class="btn btn-danger">
+        <i class="bi bi-trash"></i> Hapus yang Dipilih
+    </button>
+</form>
 
     <div class="row">
         <div class="col-md-6">
@@ -121,6 +170,32 @@
 
     {% endif %}
 </div>
+<script>
+document.getElementById("selectAll").addEventListener("click", function() {
+    let checkboxes = document.querySelectorAll(".item-checkbox");
+    for (let checkbox of checkboxes) {
+        checkbox.checked = this.checked;
+    }
+});
+</script>
+<script>
+document.querySelector("form[action*='delete_cart_elva']").addEventListener("submit", function(e) {
+
+    let hiddenContainer = document.getElementById("hiddenInputs");
+    hiddenContainer.innerHTML = "";
+
+    let checked = document.querySelectorAll(".delete-checkbox:checked");
+
+    checked.forEach(function(box){
+        let input = document.createElement("input");
+        input.type = "hidden";
+        input.name = "selected_item";
+        input.value = box.value;
+        hiddenContainer.appendChild(input);
+    });
+
+});
+</script>
 
 </body>
 </html>

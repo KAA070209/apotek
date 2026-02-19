@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Struk Online</title>
+    <style>
+        body {
+            font-family: monospace;
+            width: 300px;
+            margin: auto;
+        }
+        h3 {
+            text-align: center;
+        }
+        hr {
+            border: 1px dashed #000;
+        }
+        .right {
+            text-align: right;
+        }
+        .btn {
+            margin-top: 15px;
+            padding: 10px;
+            width: 100%;
+            background: black;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body onload="window.print()">
+
+<h3>APOTEK ELVA</h3>
+<hr>
+
+No Faktur: {{ transaksi.no_faktur_elva }} <br>
+Tanggal: {{ transaksi.tanggal_elva }} <br>
+Metode: {{ transaksi.metode_bayar_elva }} <br>
+
+<hr>
+
+{% for item in items %}
+{{ item.nama_obat_elva if item.nama_obat_elva else "Racikan" }} <br>
+{{ item.jumlah_elva }} x {{ item.harga_elva }} 
+<span class="right">{{ item.total_elva }}</span>
+<br>
+{% endfor %}
+
+<hr>
+<b>Total: Rp {{ transaksi.total_elva }}</b>
+<hr>
+
+<form method="POST" action="/konfirmasi_bayar_online/{{ transaksi.id_transaksi_elva }}">
+    <button class="btn">✔ Konfirmasi Bayar</button>
+</form>
+
+</body>
+</html>

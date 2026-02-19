@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <title>Scan Pesanan Online - Elva</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <!-- Bootstrap -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <style>
+        body{
+            margin:0;
+            background: linear-gradient(135deg,#e3f2fd,#ffffff);
+            font-family:'Segoe UI',sans-serif;
+            min-height:100vh;
+            display:flex;
+            justify-content:center;
+            align-items:center;
+        }
+
+        .scan-card{
+            width:100%;
+            max-width:480px;
+            background:white;
+            border-radius:22px;
+            padding:30px;
+            box-shadow:0 20px 40px rgba(13,71,161,0.15);
+            animation:fadeIn 0.6s ease-in-out;
+        }
+
+        @keyframes fadeIn{
+            from{opacity:0; transform:translateY(20px);}
+            to{opacity:1; transform:translateY(0);}
+        }
+
+        .header-title{
+            text-align:center;
+            margin-bottom:25px;
+        }
+
+        .header-title h3{
+            font-weight:700;
+            color:#1565c0;
+            margin-bottom:5px;
+        }
+
+        .header-title p{
+            font-size:14px;
+            color:#6c757d;
+        }
+
+        #reader{
+            border-radius:18px;
+            overflow:hidden;
+            border:3px solid #e3f2fd;
+            box-shadow:0 10px 25px rgba(21,101,192,0.1);
+        }
+
+        .footer-text{
+            text-align:center;
+            font-size:12px;
+            margin-top:15px;
+            color:#9e9e9e;
+        }
+
+        .btn-back{
+            background:linear-gradient(45deg,#1976d2,#42a5f5);
+            border:none;
+            color:white;
+            border-radius:12px;
+            padding:8px 18px;
+            font-size:13px;
+            margin-bottom:15px;
+        }
+
+        .btn-back:hover{
+            opacity:0.9;
+        }
+
+        @media(max-width:576px){
+            .scan-card{
+                margin:15px;
+                padding:20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="scan-card">
+
+    <div class="header-title">
+        <h3>📷 Scan Pesanan Online</h3>
+        <p>Kasir Apotek Elva</p>
+    </div>
+
+    <div id="reader"></div>
+
+    <div class="footer-text">
+        Arahkan QR ke kamera untuk memproses pesanan
+    </div>
+
+</div>
+
+<script>
+function showAlert(message,type="danger"){
+    const alertBox = document.createElement("div");
+    alertBox.className = `alert alert-${type} mt-3`;
+    alertBox.innerText = message;
+    document.querySelector(".scan-card").appendChild(alertBox);
+
+    setTimeout(()=>{
+        alertBox.remove();
+    },3000);
+}
+
+function onScanSuccess(decodedText) {
+
+    html5QrcodeScanner.clear();
+
+    fetch('/proses_scan_online_elva', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ no_faktur: decodedText })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if(data.status === "success"){
+            window.location.href = data.redirect;
+        } else {
+            showAlert(data.message,"danger");
+            setTimeout(()=> location.reload(),2000);
+        }
+    })
+    .catch(()=>{
+        showAlert("Terjadi kesalahan sistem","danger");
+        setTimeout(()=> location.reload(),2000);
+    });
+}
+
+let html5QrcodeScanner = new Html5QrcodeScanner(
+    "reader",
+    { 
+        fps: 10, 
+        qrbox: 250 
+    }
+);
+
+html5QrcodeScanner.render(onScanSuccess);
+</script>
+
+</body>
+</html>
